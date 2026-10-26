@@ -1,0 +1,21 @@
+# Producao. Todos os segredos vem de variaveis de ambiente / ficheiros de segredos,
+# nunca do codigo nem do Git.
+spring:
+  datasource:
+    url: ${DB_URL}                 # ex.: jdbc:postgresql://db:5432/inventory?sslmode=verify-full
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+server:
+  # Atras de um proxy HTTPS (nginx/IIS/load balancer) que define X-Forwarded-*.
+  # Garante o IP real do cliente (rate limit, auditoria) e o esquema https.
+  forward-headers-strategy: native
+
+app:
+  security:
+    issuer: ${JWT_ISSUER}
+    audience: ${JWT_AUDIENCE:nwh-inventory-api}
+    key-id: ${JWT_KEY_ID}
+    private-key-location: ${JWT_PRIVATE_KEY_LOCATION}   # ex.: file:/run/secrets/jwt-private.pem
+    public-key-location: ${JWT_PUBLIC_KEY_LOCATION}     # ex.: file:/run/secrets/jwt-public.pem
+    allow-ephemeral-keys: false

@@ -1,0 +1,14 @@
+# Desenvolvimento local. NAO usar em producao.
+spring:
+  datasource:
+    url: jdbc:h2:mem:securejwt;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: false
+
+app:
+  security:
+    issuer: http://localhost:8080
+    allow-ephemeral-keys: true   # chaves temporarias, so em dev

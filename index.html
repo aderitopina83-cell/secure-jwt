@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teste JWT seguro</title>
+    <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main>
+    <header>
+        <h1>Teste de autenticação JWT</h1>
+        <p class="sub">Cada botão faz um pedido real à API. O resultado aparece no registo à direita.</p>
+    </header>
+
+    <div class="grid">
+        <section class="panel">
+            <h2>1. Login</h2>
+            <form id="login-form" autocomplete="off">
+                <label>Utilizador
+                    <input id="username" type="text" value="admin@nwh.local" required>
+                </label>
+                <label>Senha
+                    <input id="password" type="password" required>
+                </label>
+                <button type="submit" class="primary">Entrar</button>
+            </form>
+
+            <h2>2. Usar o token</h2>
+            <div class="buttons">
+                <button data-action="me">Ver os meus dados</button>
+                <button data-action="admin">Área de admin</button>
+                <button data-action="refresh">Renovar token</button>
+                <button data-action="logout">Logout</button>
+                <button data-action="logoutAll">Terminar todas as sessões</button>
+            </div>
+
+            <h2>3. Tentar atacar</h2>
+            <div class="buttons">
+                <button data-action="readCookie" class="attack">Ler o token com JavaScript</button>
+                <button data-action="noCsrf" class="attack">Pedido sem token CSRF</button>
+                <button data-action="bruteForce" class="attack">6 senhas erradas</button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="log-head">
+                <h2>Registo</h2>
+                <button data-action="clear" class="small">Limpar</button>
+            </div>
+            <ol id="log"></ol>
+        </section>
+    </div>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

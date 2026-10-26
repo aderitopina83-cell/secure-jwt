@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: secure-jwt
+  profiles:
+    default: dev
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none          # o schema vem das migracoes Flyway
+  flyway:
+    enabled: true
+
+server:
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+    include-exception: false
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+
+app:
+  security:
+    issuer: https://inventory.nwh.local
+    audience: nwh-inventory-api
+    access-token-ttl: 10m
+    refresh-token-ttl: 8h
+    key-id: nwh-2026-10
+    allow-ephemeral-keys: false
+    max-failed-logins: 5
+    lockout-duration: 15m
+    max-login-requests-per-ip-per-minute: 10
+
+logging:
+  level:
+    AUDIT: INFO

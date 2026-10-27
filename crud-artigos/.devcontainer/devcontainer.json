@@ -1,0 +1,16 @@
+{
+  "name": "crud-artigos (Java 21 + Maven)",
+  "image": "mcr.microsoft.com/devcontainers/java:1-21",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "none",
+      "installMaven": "true",
+      "installGradle": "false"
+    }
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "Pagina de teste", "onAutoForward": "openBrowser" }
+  },
+  "postCreateCommand": "mvn -q -B dependency:go-offline || true"
+}

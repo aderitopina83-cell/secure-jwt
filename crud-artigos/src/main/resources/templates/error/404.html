@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!--
+    Pagina de erro 404. O Spring Boot procura sozinho templates/error/<codigo>.html.
+    Aparece, por exemplo, ao abrir /artigos/999/editar (artigo inexistente).
+-->
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Não encontrado</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main class="estreito">
+    <h1>Não encontrado</h1>
+    <p>O artigo que procura não existe ou já foi apagado.</p>
+    <a class="botao primario" th:href="@{/artigos}">Voltar à lista</a>
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+# Configuracao da aplicacao (equivalente ao .env + config/*.php do Laravel).
+# YAML: a indentacao (espacos) define a hierarquia. Nunca usar tabs.
+
+spring:
+  application:
+    name: crud-artigos
+
+  datasource:
+    # Base de dados H2 em MEMORIA: criada no arranque, apagada ao parar.
+    url: jdbc:h2:mem:inventario;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      # create-drop: o Hibernate cria as tabelas a partir das classes @Entity
+      # no arranque e apaga-as ao parar. Otimo para aprender.
+      # Em producao NUNCA: usa-se Flyway (como no projeto secure-jwt).
+      ddl-auto: create-drop
+    # Mostra no terminal o SQL que o Hibernate gera. Muito util para aprender:
+    # repara nos SELECT, INSERT, UPDATE e DELETE quando usas a pagina.
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  h2:
+    console:
+      # Consola web da base de dados em /h2-console (so para aprender).
+      # JDBC URL: jdbc:h2:mem:inventario   Utilizador: sa   Senha: (vazio)
+      enabled: true
+
+server:
+  port: 8080
+  error:
+    # Nunca mostrar detalhes tecnicos de erros ao utilizador.
+    include-stacktrace: never
+    include-message: never

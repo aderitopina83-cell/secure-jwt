@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--
+    FORMULARIO usado para CRIAR (C) e para EDITAR (U).
+    Como sabe qual e qual? Pelo id do artigo:
+      - artigo.id == null  -> artigo novo  -> envia para POST /artigos
+      - artigo.id != null  -> edicao       -> envia para POST /artigos/{id}
+-->
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Operador ternario: condicao ? valorSeSim : valorSeNao -->
+    <title th:text="${artigo.id == null} ? 'Novo artigo' : 'Editar artigo'">Artigo</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main class="estreito">
+    <a class="voltar" th:href="@{/artigos}">← Voltar à lista</a>
+    <h1 th:text="${artigo.id == null} ? 'Novo artigo' : ('Editar artigo ' + ${artigo.codigo})">Artigo</h1>
+
+    <!--
+        th:object liga o formulario inteiro ao objeto "artigo" do Model.
+        Dentro dele, *{campo} e um atalho para ${artigo.campo}.
+
+        th:action escolhe o URL de destino conforme seja novo ou edicao.
+    -->
+    <form class="cartao"
+          th:object="${artigo}"
+          th:action="${artigo.id == null} ? @{/artigos} : @{/artigos/{id}(id=${artigo.id})}"
+          method="post"
+          novalidate>
+
+        <!--
+            th:field="*{codigo}" faz 3 coisas de uma vez:
+              1. id="codigo" e name="codigo" (o Spring usa o name para chamar setCodigo)
+              2. value = o valor atual (vazio se for novo, preenchido se for edicao)
+              3. se houver erro de validacao, mantem o que o utilizador escreveu
+
+            th:errorclass acrescenta a classe CSS "invalido" quando ha erro.
+            th:errors mostra a mensagem definida na classe Artigo (@NotBlank(message=...)).
+            #fields.hasErrors('codigo') = "este campo tem erros?"
+        -->
+        <label for="codigo">Código</label>
+        <input type="text" th:field="*{codigo}" th:errorclass="invalido"
+               maxlength="20" placeholder="LUV-075" autocomplete="off">
+        <p class="erro-campo" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}">Erro</p>
+
+        <label for="descricao">Descrição</label>
+        <input type="text" th:field="*{descricao}" th:errorclass="invalido" maxlength="120">
+        <p class="erro-campo" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}">Erro</p>
+
+        <label for="area">Área</label>
+        <!-- Lista de opcoes a partir do enum. "areas" vem do @ModelAttribute do controller. -->
+        <select th:field="*{area}" th:errorclass="invalido">
+            <option value="">— escolher —</option>
+            <!-- th:each cria um <option> por cada valor do enum.
+                 value = o nome tecnico (OR); texto = o nome bonito (Bloco Operatório). -->
+            <option th:each="ar : ${areas}" th:value="${ar}" th:text="${ar.descricao}">Área</option>
+        </select>
+        <p class="erro-campo" th:if="${#fields.hasErrors('area')}" th:errors="*{area}">Erro</p>
+
+        <div class="duas-colunas">
+            <div>
+                <label for="quantidade">Quantidade</label>
+                <input type="number" th:field="*{quantidade}" th:errorclass="invalido" min="0">
+                <p class="erro-campo" th:if="${#fields.hasErrors('quantidade')}" th:errors="*{quantidade}">Erro</p>
+            </div>
+            <div>
+                <label for="stockMinimo">Stock mínimo</label>
+                <input type="number" th:field="*{stockMinimo}" th:errorclass="invalido" min="0">
+                <p class="erro-campo" th:if="${#fields.hasErrors('stockMinimo')}" th:errors="*{stockMinimo}">Erro</p>
+            </div>
+        </div>
+
+        <label for="dataValidade">Validade <span class="opcional">(opcional)</span></label>
+        <input type="date" th:field="*{dataValidade}" th:errorclass="invalido">
+        <p class="erro-campo" th:if="${#fields.hasErrors('dataValidade')}" th:errors="*{dataValidade}">Erro</p>
+
+        <div class="botoes">
+            <button type="submit" class="botao primario">Guardar</button>
+            <a class="botao" th:href="@{/artigos}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

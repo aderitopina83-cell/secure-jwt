@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+    PAGINA DA LISTA (o "R" do CRUD).
+    E um template Thymeleaf: HTML normal com atributos extra "th:..."
+    que o servidor substitui por dados ANTES de enviar a pagina ao browser.
+    Equivalente a um ficheiro .blade.php do Laravel.
+
+    xmlns:th declara o prefixo "th:" (so para o editor reconhecer).
+-->
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Artigos</title>
+    <!-- @{...} cria um URL a partir da raiz da aplicacao (como asset() / url() no Laravel) -->
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main>
+    <header class="topo">
+        <div>
+            <h1>Artigos de inventário</h1>
+            <!-- ${...} le dados que o controller pos no Model.
+                 #lists.size(...) e uma funcao utilitaria do Thymeleaf. -->
+            <p class="sub" th:text="${#lists.size(artigos)} + ' artigos'">0 artigos</p>
+        </div>
+        <a class="botao primario" th:href="@{/artigos/novo}">+ Novo artigo</a>
+    </header>
+
+    <!-- th:if: este bloco so aparece se a condicao for verdadeira.
+         "mensagem" e o flash attribute posto pelo controller depois de gravar. -->
+    <div class="aviso sucesso" th:if="${mensagem}" th:text="${mensagem}">Mensagem</div>
+
+    <!-- Formulario de pesquisa: usa GET, por isso o texto aparece no URL (?q=...)
+         e podes guardar ou partilhar o link da pesquisa. -->
+    <form class="pesquisa" th:action="@{/artigos}" method="get">
+        <!-- th:value preenche o campo com o texto pesquisado. -->
+        <input type="search" name="q" th:value="${q}" placeholder="Procurar por código ou descrição">
+        <button type="submit" class="botao">Procurar</button>
+        <!-- So mostra "Limpar" se houver uma pesquisa ativa. -->
+        <a class="botao" th:href="@{/artigos}" th:if="${q != null and !#strings.isEmpty(q)}">Limpar</a>
+    </form>
+
+    <!-- th:unless e o contrario de th:if: aparece quando a lista esta vazia. -->
+    <p class="vazio" th:unless="${#lists.size(artigos) > 0}">Nenhum artigo encontrado.</p>
+
+    <div class="tabela-scroll" th:if="${#lists.size(artigos) > 0}">
+        <table>
+            <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Área</th>
+                <th class="num">Qtd.</th>
+                <th class="num">Mín.</th>
+                <th>Validade</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- th:each = ciclo "for-each" (semana 3 do plano).
+                 Repete este <tr> uma vez para cada artigo da lista.
+                 Em cada volta, "a" e o artigo atual. -->
+            <tr th:each="a : ${artigos}">
+                <!-- th:text escreve o valor e PROTEGE contra XSS: se a descricao
+                     tiver "<script>", aparece como texto e nao e executada. -->
+                <td class="codigo" th:text="${a.codigo}">LUV-075</td>
+                <td th:text="${a.descricao}">Descrição</td>
+                <!-- a.area e o enum; .descricao chama getDescricao() do enum -->
+                <td th:text="${a.area.descricao}">Área</td>
+                <td class="num" th:text="${a.quantidade}">0</td>
+                <td class="num" th:text="${a.stockMinimo}">0</td>
+                <!-- #temporals.format formata a data. O "?" evita erro se for null:
+                     se nao houver data, mostra "—". -->
+                <td th:text="${a.dataValidade != null} ? ${#temporals.format(a.dataValidade, 'dd/MM/yyyy')} : '—'">—</td>
+                <td>
+                    <!-- Etiquetas de estado: chamam os metodos de regra da classe Artigo. -->
+                    <span class="etiqueta erro" th:if="${a.expirado()}">Expirado</span>
+                    <span class="etiqueta alerta" th:if="${a.expiraEmBreve()}">Expira em breve</span>
+                    <span class="etiqueta alerta" th:if="${a.precisaReposicao()}">Repor</span>
+                    <span class="etiqueta ok"
+                          th:unless="${a.expirado() or a.expiraEmBreve() or a.precisaReposicao()}">OK</span>
+                </td>
+                <td class="acoes">
+                    <!-- @{/artigos/{id}/editar(id=${a.id})} monta o URL /artigos/5/editar -->
+                    <a class="botao pequeno" th:href="@{/artigos/{id}/editar(id=${a.id})}">Editar</a>
+
+                    <!-- Apagar e um FORMULARIO com POST, nunca um link.
+                         onsubmit pede confirmacao antes de enviar. -->
+                    <form th:action="@{/artigos/{id}/apagar(id=${a.id})}" method="post"
+                          onsubmit="return confirm('Apagar este artigo?');">
+                        <button type="submit" class="botao pequeno perigo">Apagar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
